@@ -4,9 +4,9 @@ FLAG =  c++
 
 FLAGS =  -Wall -Wextra -Werror -std=c++98
  
-HEADER = ./Fixed.hpp
+HEADER = ./Fixed.hpp ./Point.hpp
 
-SRC = ./main.cpp ./Fixed.cpp
+SRC = ./main.cpp ./Fixed.cpp ./Point.cpp
 
 
 OBJ = $(SRC:.cpp=.o)

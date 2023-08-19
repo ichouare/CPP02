@@ -10,14 +10,14 @@ Fixed::Fixed(const int val)
 {
 
     // std::cout << "Int constructor called" << std::endl;
-    m_stVal = val  << m_fractionBit; // this operation shifting left this is equivalent to multipple by 2^8 or 256 is means to change presentation of val by shiftting  to the left by 8 positions 5 (00000101) => 0000010100000000 ()
-    // std::cout << "|" << m_stVal << "|" <<  std::endl;
+    m_stVal = val << m_fractionBit; 
     setRawBits(m_stVal);
 }
 
 Fixed::Fixed(const float val) 
 {
-  setRawBits(roundf(val * 256));
+    int scale_factor = 1 << m_fractionBit;
+    setRawBits(roundf(val * scale_factor));
 }   
 
 Fixed::~Fixed()
@@ -41,32 +41,26 @@ Fixed& Fixed::operator=(const Fixed &obj)
 
 Fixed Fixed::operator+(const Fixed &obj)
 {
-    Fixed result;
-    result.m_stVal = m_stVal + obj.m_stVal;
+    Fixed result(this->toFloat() + obj.toFloat());
     return (result);
 }
 
 Fixed Fixed::operator-(const Fixed &obj)
 {
-    Fixed result;
-    result.m_stVal = m_stVal - obj.m_stVal;
+    Fixed result(this->toFloat() - obj.toFloat());
     return (result);
 }
 
 Fixed Fixed::operator*(const Fixed &obj)
 {
-    Fixed result;
-
-    result.m_stVal = m_stVal *  obj.m_stVal;
-    result.m_stVal = roundf(result.m_stVal / 256.0f);
+     Fixed result(this->toFloat() * obj.toFloat());
     return (result);
 }
 
 Fixed Fixed::operator/(const Fixed &obj)
 {
-    Fixed result;
-    result.m_stVal = m_stVal / obj.m_stVal;
-    return (result);
+    Fixed result(this->toFloat() / obj.toFloat());
+    return ((result));
 }
 
 
@@ -158,12 +152,13 @@ void Fixed::setRawBits( int const raw )
 
 int Fixed::toInt(void) const
 {
-    return m_stVal / 256.0f;
+    return m_stVal >> m_fractionBit;
 }
 
 float Fixed::toFloat( void ) const
 {
-    return (float)(m_stVal / 256.0f);
+    float scale_fraction = 1 << m_fractionBit;
+    return ((m_stVal) / scale_fraction);
 }
 
 Fixed const & Fixed::min(Fixed  const  &obj1, Fixed const & obj2)
@@ -203,65 +198,6 @@ Fixed const & Fixed::max(Fixed    & obj1, Fixed  &  obj2)
 std::ostream &operator<<( std::ostream &flux, Fixed const& num)
 {
 
-   flux << (num.getRawBits() / 256.0f);
+   flux << (num.toFloat());
     return flux;
-}
-
-Point::Point():x_f(0),y_f(0)
-{
-
-}
-
-Point::Point(float x, float y):x_f(x),y_f(y)
-{
- 
-}
-
-Point::~Point()
-{
-
-}
-
-Point::Point(const Point &originale)
-{
-    *(this) = originale;
-}
-
-Point& Point::operator=(const Point &obj)
-{
-    x_f = obj.x_f;
-    y_f = obj.y_f;
-    return (*this);
-}
-
-
-float Point::get_x() const
-{
-    return x_f.toFloat() / 256.0f;
-}
-
-float Point::get_y() const
-{
-    return y_f.toFloat() / 256.0f;
-}
-
-float triangle_area( Point const a, Point const b, Point const c)
-{
-    float area = (1 / 2.0) * (((a.get_x() - b.get_x()) * (a.get_y() - c.get_y())) - ((a.get_x() - c.get_x()) * (a.get_y() - b.get_y())));
-    if(area < 0)
-        area *= -1;
-    return area;
-}
-
-bool bsp( Point const a, Point const b, Point const c, Point const point)
-{
-    float globalS = triangle_area(a, b, c);  // sufrace ABC
-    float S1 = triangle_area(point, a, b);  // sufrace PAB
-    float S2 = triangle_area(point, b, c);  // sufrace PBC
-    float S3 = triangle_area(point, a, c);  // sufrace PAC
-    if((S1 + S2 + S3) == globalS)
-        return true;
-    else
-        return  false;
-    
 }

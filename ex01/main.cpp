@@ -35,7 +35,7 @@ return 0;
 // d is 10
 // a is 1234 as integer
 // b is 10 as integer
-// c is 42 as integer
+// c is ` as integer
 // d is 10 as integer
 // Destructor called
 // Destructor called

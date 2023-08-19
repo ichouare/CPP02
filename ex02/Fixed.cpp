@@ -10,14 +10,15 @@ Fixed::Fixed(const int val)
 {
 
     // std::cout << "Int constructor called" << std::endl;
-    m_stVal = val  << m_fractionBit; // this operation shifting left this is equivalent to multipple by 2^8 or 256 is means to change presentation of val by shiftting  to the left by 8 positions 5 (00000101) => 0000010100000000 ()
+    m_stVal = val << m_fractionBit; // this operation shifting left this is equivalent to multipple by 2^8 or 256 is means to change presentation of val by shiftting  to the left by 8 positions 5 (00000101) => 0000010100000000 ()
     // std::cout << "|" << m_stVal << "|" <<  std::endl;
     setRawBits(m_stVal);
 }
 
 Fixed::Fixed(const float val) 
 {
-  setRawBits(roundf(val * 256));
+    int scale_factor = 1 << m_fractionBit;
+    setRawBits(roundf(val * scale_factor));
 }   
 
 Fixed::~Fixed()
@@ -41,32 +42,26 @@ Fixed& Fixed::operator=(const Fixed &obj)
 
 Fixed Fixed::operator+(const Fixed &obj)
 {
-    Fixed result;
-    result.m_stVal = m_stVal + obj.m_stVal;
+    Fixed result(this->toFloat() + obj.toFloat());
     return (result);
 }
 
 Fixed Fixed::operator-(const Fixed &obj)
 {
-    Fixed result;
-    result.m_stVal = m_stVal - obj.m_stVal;
+    Fixed result(this->toFloat() - obj.toFloat());
     return (result);
 }
 
 Fixed Fixed::operator*(const Fixed &obj)
 {
-    Fixed result;
-
-    result.m_stVal = m_stVal *  obj.m_stVal;
-    result.m_stVal = roundf(result.m_stVal / 256.0f);
+     Fixed result(this->toFloat() * obj.toFloat());
     return (result);
 }
 
 Fixed Fixed::operator/(const Fixed &obj)
 {
-    Fixed result;
-    result.m_stVal = m_stVal / obj.m_stVal;
-    return (result);
+    Fixed result(this->toFloat() / obj.toFloat());
+    return ((result));
 }
 
 
@@ -158,12 +153,13 @@ void Fixed::setRawBits( int const raw )
 
 int Fixed::toInt(void) const
 {
-    return m_stVal / 256.0f;
+    return m_stVal >> m_fractionBit;
 }
 
 float Fixed::toFloat( void ) const
 {
-    return (float)(m_stVal / 256.0f);
+    float scale_fraction = 1 << m_fractionBit;
+    return ((m_stVal) / scale_fraction);
 }
 
 Fixed const & Fixed::min(Fixed  const  &obj1, Fixed const & obj2)
@@ -203,6 +199,6 @@ Fixed const & Fixed::max(Fixed    & obj1, Fixed  &  obj2)
 std::ostream &operator<<( std::ostream &flux, Fixed const& num)
 {
 
-   flux << (num.getRawBits() / 256.0f);
+   flux << (num.toFloat());
     return flux;
 }

@@ -10,7 +10,7 @@ Fixed::Fixed():m_stVal(0)
 
 Fixed::~Fixed()
 {
-      std::cout << "Desconstructor called" << std::endl;
+      std::cout << "Destructor called" << std::endl;
 }
 
 Fixed::Fixed(const Fixed &originale)
@@ -29,7 +29,7 @@ void Fixed::operator=(Fixed &obj)
 int Fixed::getRawBits( void ) const
 {
     std::cout << "getRawBits member function called" << std::endl;
-    return m_stVal;
+    return (m_stVal);
 }
 
 
